@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1080.0" style="-fx-background-color: #FFDFAA;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="javafxapplication1.JavaFXApplication1Controller">
+   <children>
+      <ImageView fx:id="logo" fitHeight="243.0" fitWidth="298.0" layoutX="399.0" layoutY="29.0">
+         <image>
+            <Image url="@biteedash.png" />
+         </image>
+      </ImageView>
+      <Button fx:id="orderbtn" alignment="CENTER" layoutX="599.0" layoutY="257.0" mnemonicParsing="false" onAction="#handleSubmitOrder" prefHeight="30.0" prefWidth="110.0" style="-fx-background-color: #FFB6C1;" text="Submit order" textFill="NAVY">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <ChoiceBox fx:id="choicebox" layoutX="375.0" layoutY="259.0" prefHeight="25.0" prefWidth="181.0" style="-fx-background-color: white;" />
+      <HBox fx:id="divider" alignment="CENTER" layoutX="83.0" layoutY="319.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: #FFB6C1;">
+         <children>
+            <Label fx:id="riderlist" alignment="CENTER" prefWidth="150.0" text="List of drivers" textFill="NAVY">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="rideravailability" alignment="CENTER" prefWidth="150.0" text="Rider status" textFill="NAVY">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="foodorder" alignment="CENTER" prefWidth="150.0" text="Orders" textFill="NAVY">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statusorder" alignment="CENTER" prefWidth="150.0" text="Order status" textFill="NAVY">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <HBox fx:id="row1" alignment="CENTER" layoutX="83.0" layoutY="352.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: lightyellow;">
+         <children>
+            <Label fx:id="a1" alignment="CENTER" prefWidth="150.0" text="Rider 1" />
+            <Label fx:id="a2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="a3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="a4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row2" alignment="CENTER" layoutX="83.0" layoutY="377.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="b1" alignment="CENTER" prefWidth="150.0" text="Rider 2" />
+            <Label fx:id="b2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="b3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="b4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row3" alignment="CENTER" layoutX="83.0" layoutY="402.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: lightyellow;">
+         <children>
+            <Label fx:id="c1" alignment="CENTER" prefWidth="150.0" text="Rider 3" />
+            <Label fx:id="c2" alignment="CENTER" prefWidth="150.0" text="Not Available" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="c3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="c4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row4" alignment="CENTER" layoutX="83.0" layoutY="427.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="d1" alignment="CENTER" prefWidth="150.0" text="Rider 4" />
+            <Label fx:id="d2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="d3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="d4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row5" alignment="CENTER" layoutX="83.0" layoutY="452.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: lightyellow;">
+         <children>
+            <Label fx:id="e1" alignment="CENTER" prefWidth="150.0" text="Rider 5" />
+            <Label fx:id="e2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="e3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="e4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row6" alignment="CENTER" layoutX="83.0" layoutY="477.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="f1" alignment="CENTER" prefWidth="150.0" text="Rider 6" />
+            <Label fx:id="f2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="f3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="f4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row7" alignment="CENTER" layoutX="83.0" layoutY="502.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: lightyellow;">
+         <children>
+            <Label fx:id="g1" alignment="CENTER" prefWidth="150.0" text="Rider 7" />
+            <Label fx:id="g2" alignment="CENTER" prefWidth="150.0" text="Not Available" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="g3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="g4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row8" alignment="CENTER" layoutX="83.0" layoutY="527.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="h1" alignment="CENTER" prefWidth="150.0" text="Rider 8" />
+            <Label fx:id="h2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="h3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="h4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row9" alignment="CENTER" layoutX="83.0" layoutY="552.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: lightyellow;">
+         <children>
+            <Label fx:id="i1" alignment="CENTER" prefWidth="150.0" text="Rider 9" />
+            <Label fx:id="i2" alignment="CENTER" prefWidth="150.0" text="Not Available" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="i3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="i4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <HBox fx:id="row10" alignment="CENTER" layoutX="83.0" layoutY="577.0" prefHeight="25.0" prefWidth="915.0" style="-fx-background-color: white;">
+         <children>
+            <Label fx:id="j1" alignment="CENTER" prefWidth="150.0" text="Rider 10" />
+            <Label fx:id="j2" alignment="CENTER" prefWidth="150.0" text="Available" textFill="GREEN">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="j3" alignment="CENTER" prefWidth="150.0" text="(Empty)" textFill="LIGHTGRAY" />
+            <Label fx:id="j4" alignment="CENTER" prefWidth="150.0" text="Pending..." textFill="LIGHTGRAY" />
+         </children>
+      </HBox>
+      <Button fx:id="clearorderbtn" alignment="CENTER" layoutX="744.0" layoutY="257.0" mnemonicParsing="false" onAction="#handleClearOrder" prefHeight="30.0" prefWidth="110.0" style="-fx-background-color: #FFB6C1;" text="Clear order" textFill="NAVY">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="assignbtn" alignment="CENTER" layoutX="888.0" layoutY="257.0" mnemonicParsing="false" onAction="#handleAssignOrder" prefHeight="30.0" prefWidth="110.0" style="-fx-background-color: #FFB6C1;" text="Assign to riders" textFill="NAVY">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Label fx:id="terminal" layoutX="83.0" layoutY="61.0" prefHeight="39.0" prefWidth="275.0" text="Dispatch Terminal">
+         <font>
+            <Font name="Courier New Bold" size="24.0" />
+         </font>
+      </Label>
+      <HBox layoutX="83.0" layoutY="252.0" prefWidth="263.0" spacing="5.0">
+         <children>
+            <Label fx:id="hd1" prefHeight="39.0" text="Grab available riders">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Label>
+            <Label fx:id="hd2" alignment="CENTER" prefHeight="39.0" text="7">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="hd3" alignment="CENTER" prefHeight="39.0" text="and select order:">
+               <font>
+                  <Font name="System Italic" size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
+      <Button onAction="#showOrdersPerRiderReport"  fx:id="report" layoutX="499.0" layoutY="654.0" mnemonicParsing="false" text="Live Table View" />
+   </children>
+</Pane>
