@@ -57,7 +57,7 @@ private Label[] riderStatuses;
 
 // FUNCTIONS
     
-    
+// Hot > Cold > Normal prioritizer
     @FXML
     public void initialize() {
         
@@ -216,20 +216,28 @@ private void handleAssignOrder() {
     for (int i = 0; i < riderOrders.length; i++) {
         Label orderLabel = riderOrders[i];
         Label statusLabel = riderStatuses[i];
+        Label availabilityLabel = riderAvailability[i];
         int riderId = i + 1; // Rider IDs 1–10
 
         if (!"(Empty)".equals(orderLabel.getText())) {
             updateOrderStatusInDB(riderId, "Delivering");
             statusLabel.setText("Delivering");
             statusLabel.setTextFill(javafx.scene.paint.Color.DARKGREEN);
+            
+            availabilityLabel.setText("Not Available");
+            availabilityLabel.setTextFill(javafx.scene.paint.Color.RED);
 
+           // duration of delivery
             javafx.animation.PauseTransition deliveringTimer =
                     new javafx.animation.PauseTransition(javafx.util.Duration.seconds(15));
             deliveringTimer.setOnFinished(e -> {
                 updateOrderStatusInDB(riderId, "Delivered");
                 statusLabel.setText("Delivered");
                 statusLabel.setTextFill(javafx.scene.paint.Color.YELLOWGREEN);
+                availabilityLabel.setText("Available");
+                availabilityLabel.setTextFill(javafx.scene.paint.Color.GREEN);
 
+           // delivered pause
                 javafx.animation.PauseTransition deliveredTimer =
                         new javafx.animation.PauseTransition(javafx.util.Duration.seconds(5));
                 deliveredTimer.setOnFinished(ev -> {
@@ -324,7 +332,9 @@ private void deleteOrderFromDB(int riderId) {
 
       Scene scene = new Scene(tabPane, 700, 400);
  popupStage.setScene(scene);
+ popupStage.setResizable(false); 
  popupStage.show();
+
 
     }
 

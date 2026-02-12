@@ -21,6 +21,7 @@ public class JavaFXApplication1 extends Application {
         JavaFXApplication1Controller controller = loader.getController();
         primaryStage.setTitle("Food Delivery Dispatch Terminal");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false); 
         primaryStage.show();
     }
 
