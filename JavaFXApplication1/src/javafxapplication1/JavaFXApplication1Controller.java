@@ -277,6 +277,9 @@ private void deleteOrderFromDB(int riderId) {
         e.printStackTrace();
     }
 }
+
+
+
     
 // Advance Queries
 
@@ -287,7 +290,44 @@ private void deleteOrderFromDB(int riderId) {
         popupStage.setTitle("Advanced Reports Dashboard");
 
         TabPane tabPane = new TabPane();
-            
+        
+        
+        // all orders
+        TableView<Order> allOrdersTable = new TableView<>();
+        allOrdersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        TableColumn<Order, Integer> orderIdColumn = new TableColumn<>("Order ID");
+        TableColumn<Order, String> orderTypeColumn = new TableColumn<>("Order Type");
+        TableColumn<Order, String> orderStatusColumn = new TableColumn<>("Order Status");
+        TableColumn<Order, Integer> riderIdColumn = new TableColumn<>("Rider ID");
+        orderIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        orderTypeColumn.setCellValueFactory(new PropertyValueFactory<>("orderType"));
+        orderStatusColumn.setCellValueFactory(new PropertyValueFactory<>("orderStatus"));
+        riderIdColumn.setCellValueFactory(new PropertyValueFactory<>("riderId"));
+
+        // Add columns to table
+        allOrdersTable.getColumns().addAll(orderIdColumn, orderTypeColumn, orderStatusColumn, riderIdColumn);
+
+// Auto-refresh service
+ScheduledService<ObservableList<Order>> service = new ScheduledService<>() {
+    @Override
+    protected Task<ObservableList<Order>> createTask() {
+        return new Task<>() {
+            @Override
+            protected ObservableList<Order> call() {
+                return FXCollections.observableArrayList(dao.getAllOrders());
+            }
+        };
+    }
+};
+service.setPeriod(Duration.seconds(2)); // refresh every 2 seconds
+service.setOnSucceeded(e -> allOrdersTable.setItems(service.getValue()));
+service.start();
+
+       // Wrap in a Tab
+       Tab allOrdersTab = new Tab("All Orders", allOrdersTable);
+
+        
+
 
         // Tab 1: Orders per Rider
         TableView<OrderReport> ordersTable = new TableView<>();
@@ -328,7 +368,7 @@ private void deleteOrderFromDB(int riderId) {
         autoRefreshDeliveryStats(statsTable);
         Tab statsTab = new Tab("Delivery Stats", statsTable);
 
-        tabPane.getTabs().addAll(ordersTab, activeTab, statsTab);
+        tabPane.getTabs().addAll(ordersTab, activeTab, statsTab, allOrdersTab);
 
       Scene scene = new Scene(tabPane, 700, 400);
  popupStage.setScene(scene);

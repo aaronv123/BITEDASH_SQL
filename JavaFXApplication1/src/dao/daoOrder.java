@@ -3,6 +3,7 @@ import dao.ConnectionProvider;
 import java.sql.*;
 import java.util.*;
 import javafxapplication1.DeliveryStats;
+import javafxapplication1.Order;
 import javafxapplication1.OrderDetails;
 
 /**
@@ -77,5 +78,28 @@ public List<DeliveryStats> getDeliveryStats() {
     return list;
 }
 
+// view order
 
+public List<Order> getAllOrders() {
+    List<Order> list = new ArrayList<>();
+    String sql = "SELECT * FROM orders";
+
+    try (Connection conn = ConnectionProvider.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            list.add(new Order(
+                rs.getInt("id"),
+                rs.getString("order_type"),
+                rs.getString("order_status"),
+                rs.getInt("rider_id")
+            ));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+
+    }
 }
