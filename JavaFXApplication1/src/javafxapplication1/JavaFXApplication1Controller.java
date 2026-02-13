@@ -18,6 +18,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import dao.daoOrder;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.scene.control.Tab;
@@ -76,7 +78,7 @@ private Label[] riderStatuses;
     }
 
 //Insert Statements
-    
+
 @FXML
 private void handleSubmitOrder() {
     String selected = choicebox.getValue();
@@ -87,8 +89,7 @@ private void handleSubmitOrder() {
     }
     
       int assignedRiderId = -1;
-
-
+      
     // Example: assign to the first available rider
     if ("Available".equalsIgnoreCase(a2.getText()) && "(Empty)".equals(a3.getText())) {
         a3.setText(selected);
@@ -155,21 +156,52 @@ private void handleSubmitOrder() {
             return;
         }
 
-    // Insert into all four columns
-    String sql = "INSERT INTO orders (order_type, rider_id, is_available, order_status) VALUES (?, ?, ?, ?)";
+    
+    
+    // Insert into all six columns
+    String sql = "INSERT INTO orders (order_type, rider_id, is_available, order_status, customer_id, restaurant_id) " +
+             "VALUES (?, ?, ?, ?, ?, ?)";
 
     try (Connection conn = ConnectionProvider.getConnection();
          PreparedStatement stmt = conn.prepareStatement(sql)) {
+        
+ 
+        // --- Fetch all valid IDs from parent tables ---
+        List<Integer> restaurantIds = new ArrayList<>();
+        ResultSet rsRest = conn.createStatement()
+                               .executeQuery("SELECT restaurant_id FROM restaurants ORDER BY restaurant_id");
+        while (rsRest.next()) {
+            restaurantIds.add(rsRest.getInt(1));
+        }
 
+        List<Integer> customerIds = new ArrayList<>();
+        ResultSet rsCust = conn.createStatement()
+                               .executeQuery("SELECT customer_id FROM customers ORDER BY customer_id");
+        while (rsCust.next()) {
+            customerIds.add(rsCust.getInt(1));
+        }
+
+        // --- Count how many orders exist ---
+        ResultSet rsCount = conn.createStatement()
+                                .executeQuery("SELECT COUNT(*) FROM orders");
+        rsCount.next();
+        int orderCount = rsCount.getInt(1);
+
+    // Cycle IDs based on order count
+        int selectedCustomerId = customerIds.get(orderCount % customerIds.size());
+        int selectedRestaurantId = restaurantIds.get(orderCount % restaurantIds.size());
+        
         stmt.setString(1, selected);          // order_type
         stmt.setInt(2, assignedRiderId);     // rider_id 
         stmt.setBoolean(3, true);             // is_available defaults to TRUE
         stmt.setString(4, "Pending");         // status starts as Pending
+        stmt.setInt(5, selectedCustomerId);     // customer_id
+        stmt.setInt(6, selectedRestaurantId); // restaurant_id
 
         int rows = stmt.executeUpdate();
         System.out.println("Order submitted for Rider " + assignedRiderId + ": " + selected + " (rows affected: " + rows + ")");
 
-    
+
 } catch (Exception e) {
         e.printStackTrace();
     }
@@ -220,28 +252,29 @@ private void handleAssignOrder() {
         int riderId = i + 1; // Rider IDs 1–10
 
         if (!"(Empty)".equals(orderLabel.getText())) {
+            // Mark as Delivering
             updateOrderStatusInDB(riderId, "Delivering");
             statusLabel.setText("Delivering");
             statusLabel.setTextFill(javafx.scene.paint.Color.DARKGREEN);
-            
+
             availabilityLabel.setText("Not Available");
             availabilityLabel.setTextFill(javafx.scene.paint.Color.RED);
 
-           // duration of delivery
+            // Delivery duration
             javafx.animation.PauseTransition deliveringTimer =
                     new javafx.animation.PauseTransition(javafx.util.Duration.seconds(15));
             deliveringTimer.setOnFinished(e -> {
+                // Mark as Delivered
                 updateOrderStatusInDB(riderId, "Delivered");
                 statusLabel.setText("Delivered");
                 statusLabel.setTextFill(javafx.scene.paint.Color.YELLOWGREEN);
                 availabilityLabel.setText("Available");
                 availabilityLabel.setTextFill(javafx.scene.paint.Color.GREEN);
 
-           // delivered pause
+                // After short pause, clear rider slot (but keep DB record!)
                 javafx.animation.PauseTransition deliveredTimer =
                         new javafx.animation.PauseTransition(javafx.util.Duration.seconds(5));
                 deliveredTimer.setOnFinished(ev -> {
-                    deleteOrderFromDB(riderId);
                     orderLabel.setText("(Empty)");
                     orderLabel.setTextFill(javafx.scene.paint.Color.LIGHTGRAY);
                     statusLabel.setText("Pending...");
@@ -253,7 +286,6 @@ private void handleAssignOrder() {
         }
     }
 }
-
 
 private void updateOrderStatusInDB(int riderId, String status) {
     String sql = "UPDATE orders SET order_status = ? WHERE rider_id = ?";
@@ -267,17 +299,8 @@ private void updateOrderStatusInDB(int riderId, String status) {
     }
 }
 
-private void deleteOrderFromDB(int riderId) {
-    String sql = "DELETE FROM orders WHERE rider_id = ?";
-    try (Connection conn = ConnectionProvider.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setInt(1, riderId);
-        stmt.executeUpdate();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-}
 
+// Fix loop order
 
 
     
@@ -292,7 +315,7 @@ private void deleteOrderFromDB(int riderId) {
         TabPane tabPane = new TabPane();
         
         
-        // all orders
+        // all orders Tab
         TableView<Order> allOrdersTable = new TableView<>();
         allOrdersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<Order, Integer> orderIdColumn = new TableColumn<>("Order ID");
@@ -307,29 +330,47 @@ private void deleteOrderFromDB(int riderId) {
         // Add columns to table
         allOrdersTable.getColumns().addAll(orderIdColumn, orderTypeColumn, orderStatusColumn, riderIdColumn);
 
-// Auto-refresh service
-ScheduledService<ObservableList<Order>> service = new ScheduledService<>() {
-    @Override
-    protected Task<ObservableList<Order>> createTask() {
-        return new Task<>() {
+        // Auto-refresh service
+        ScheduledService<ObservableList<Order>> service = new ScheduledService<>() {
             @Override
-            protected ObservableList<Order> call() {
-                return FXCollections.observableArrayList(dao.getAllOrders());
+            protected Task<ObservableList<Order>> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected ObservableList<Order> call() {
+                        return FXCollections.observableArrayList(dao.getAllOrders());
+                    }
+                };
             }
         };
-    }
-};
-service.setPeriod(Duration.seconds(2)); // refresh every 2 seconds
-service.setOnSucceeded(e -> allOrdersTable.setItems(service.getValue()));
-service.start();
+        service.setPeriod(Duration.seconds(2)); // refresh every 2 seconds
+        service.setOnSucceeded(e -> allOrdersTable.setItems(service.getValue()));
+        service.start();
 
        // Wrap in a Tab
        Tab allOrdersTab = new Tab("All Orders", allOrdersTable);
+       
+       
+       // Locations Tab 
+       TableView<Locations> LocationsTable = new TableView<>();
+       LocationsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+       TableColumn<Locations, Integer> id2Col = new TableColumn<>("Order ID");
+       TableColumn<Locations, String> restCol = new TableColumn<>("Restaurant");
+       TableColumn<Locations, String> restLocCol = new TableColumn<>("Restaurant Location");
+       TableColumn<Locations, String> custCol = new TableColumn<>("Customer");
+       TableColumn<Locations, String> custLocCol = new TableColumn<>("Customer Location");
+       id2Col.setCellValueFactory(new PropertyValueFactory<>("orderId"));
+       restCol.setCellValueFactory(new PropertyValueFactory<>("restaurantName"));
+       restLocCol.setCellValueFactory(new PropertyValueFactory<>("restaurantLocation"));
+       custCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+       custLocCol.setCellValueFactory(new PropertyValueFactory<>("customerLocation"));
+       LocationsTable.getColumns().addAll(id2Col, restCol, restLocCol, custCol, custLocCol);
+       autoRefreshLocations(LocationsTable);
+       Tab locationsTab = new Tab("Locations", LocationsTable);
 
-        
 
 
-        // Tab 1: Orders per Rider
+
+        //Orders per Rider Tab
         TableView<OrderReport> ordersTable = new TableView<>();
         ordersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<OrderReport, String> riderCol = new TableColumn<>("Rider");
@@ -340,7 +381,7 @@ service.start();
         autoRefreshOrdersPerRider(ordersTable);
         Tab ordersTab = new Tab("Orders per Rider", ordersTable);
 
-        // Tab 2: Active Orders
+        //Active Orders Tab
         TableView<OrderDetails> activeTable = new TableView<>();
         activeTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<OrderDetails, Integer> idCol = new TableColumn<>("Order ID");
@@ -357,7 +398,7 @@ service.start();
         autoRefreshActiveOrders(activeTable);
         Tab activeTab = new Tab("Active Orders", activeTable);
 
-        // Tab 3: Delivery Stats
+        //Delivery Stats Tab
         TableView<DeliveryStats> statsTable = new TableView<>();
         statsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         TableColumn<DeliveryStats, String> riderStatCol = new TableColumn<>("Rider");
@@ -368,17 +409,37 @@ service.start();
         autoRefreshDeliveryStats(statsTable);
         Tab statsTab = new Tab("Delivery Stats", statsTable);
 
-        tabPane.getTabs().addAll(ordersTab, activeTab, statsTab, allOrdersTab);
+        tabPane.getTabs().addAll(ordersTab, activeTab, statsTab, allOrdersTab, locationsTab);
 
+      //Live Table View Popup 
       Scene scene = new Scene(tabPane, 700, 400);
- popupStage.setScene(scene);
- popupStage.setResizable(false); 
- popupStage.show();
+      popupStage.setScene(scene);
+      popupStage.setResizable(false); 
+      popupStage.show();
 
 
     }
 
     // 🔄 Auto-refresh every 1 second
+    private void autoRefreshLocations(TableView<Locations> locationsTable) {
+        ScheduledService<ObservableList<Locations>> service = new ScheduledService<>() {
+            @Override
+            protected Task<ObservableList<Locations>> createTask() {
+                return new Task<>() {
+                    @Override
+                    protected ObservableList<Locations> call() {
+                        return FXCollections.observableArrayList(dao.getOrdersWithDetails());
+                    }
+                };
+            }
+        };
+
+        service.setPeriod(Duration.seconds(1));
+        service.setOnSucceeded(e -> locationsTable.setItems(service.getValue()));
+        service.start();
+    }
+   
+    
     private void autoRefreshOrdersPerRider(TableView<OrderReport> table) {
         ScheduledService<ObservableList<OrderReport>> service = new ScheduledService<>() {
             @Override
@@ -432,6 +493,8 @@ service.start();
         service.setOnSucceeded(e -> table.setItems(service.getValue()));
         service.start();
     }
+    
+
 }
 
 

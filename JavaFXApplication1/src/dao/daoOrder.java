@@ -3,6 +3,7 @@ import dao.ConnectionProvider;
 import java.sql.*;
 import java.util.*;
 import javafxapplication1.DeliveryStats;
+import javafxapplication1.Locations;
 import javafxapplication1.Order;
 import javafxapplication1.OrderDetails;
 
@@ -102,4 +103,32 @@ public List<Order> getAllOrders() {
     return list;
 
     }
+
+// Restaurant and Customer Location with status and order id
+public List<Locations> getOrdersWithDetails() {
+    List<Locations> list = new ArrayList<>();
+    String sql = "SELECT o.id, r.name, r.location, c.name, c.location, o.order_status " +
+                 "FROM orders o " +
+                 "INNER JOIN restaurants r ON o.restaurant_id = r.restaurant_id " +
+                 "INNER JOIN customers c ON o.customer_id = c.customer_id";
+
+    try (Connection conn = ConnectionProvider.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql);
+         ResultSet rs = stmt.executeQuery()) {
+
+        while (rs.next()) {
+            list.add(new Locations(
+                rs.getInt("id"),
+                rs.getString("name"),       // restaurant name
+                rs.getString("location"),   // restaurant location
+                rs.getString(4),            // customer name
+                rs.getString(5),            // customer location
+                rs.getString("order_status")
+            ));
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
 }
